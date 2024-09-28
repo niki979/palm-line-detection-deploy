@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Segmentation</title>
+</head>
+<body>
+    <h1>Upload an Image for Segmentation</h1>
+    <form action="/predict" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*">
+        <input type="submit" value="Upload">
+    </form>
+
+    <h2>Or capture from your webcam:</h2>
+    <button id="start-camera">Start Camera</button>
+    <button id="click-photo" style="display: none;">Capture Photo</button>
+    <video id="video" width="640" height="480" autoplay style="display: none;"></video>
+    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+
+    <form id="webcam-form" action="/predict-webcam" method="post">
+        <input type="hidden" name="image_data" id="image_data">
+        <input type="submit" value="Submit" style="display: none;" id="submit-webcam">
+    </form>
+
+    {% if mask_url %}
+        <h2>Segmented Image:</h2>
+        <img src="{{ mask_url }}" alt="Segmented Image">
+        <h3>Contour Lengths:</h3>
+        <ul>
+            {% for length in contour_lengths %}
+                <li>Contour {{ length[0] }}: {{ length[1] }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <script>
+        const startCameraButton = document.getElementById('start-camera');
+        const clickPhotoButton = document.getElementById('click-photo');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const image_data_input = document.getElementById('image_data');
+        const submit_webcam_button = document.getElementById('submit-webcam');
+
+        startCameraButton.addEventListener('click', async function() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            video.style.display = 'block';
+            clickPhotoButton.style.display = 'block';
+            startCameraButton.style.display = 'none';
+        });
+
+        clickPhotoButton.addEventListener('click', function() {
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+            image_data_input.value = imageData;
+            submit_webcam_button.style.display = 'block';
+            clickPhotoButton.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
