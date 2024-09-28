@@ -1,7 +1,3 @@
-
-
-git lfs install
-
-git lfs pull
+pip install gdown
 
 pip install -r requirements.txt
