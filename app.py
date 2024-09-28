@@ -22,7 +22,7 @@ def dice_loss(y_true, y_pred, smooth=1e-6):
     return 1 - dice_score
 
 # Load the model
-model = tf.keras.models.load_model('model.h5', custom_objects={'dice_loss': dice_loss})
+model = tf.keras.models.load_model('model2.h5', custom_objects={'dice_loss': dice_loss})
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
